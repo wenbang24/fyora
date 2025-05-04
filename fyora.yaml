@@ -1,0 +1,14 @@
+links:
+    - type: outside
+      source: ~/Desktop/everything/Notes
+      target: ~/Desktop/everything/Notes2
+    - type: inside
+      source: ~/Desktop/everything/Config/dotfiles/
+      target: ~/Desktop/everything/
+    - type: file
+      source: ~/Desktop/everything/Photos/joshie.png
+      target: ~/Desktop/everything/joshie.png
+ignore:
+    - .DS_Store
+    - .git
+    - .gitignore
