@@ -45,6 +45,17 @@ func removeHomeDir(path string) (string, error) {
 	return path, nil
 }
 
+func pathType(path string) (string, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return "", err
+	}
+	if info.IsDir() {
+		return "directory", nil
+	}
+	return "file", nil
+}
+
 func outsideSymlink(link Link) error {
 	source, err := removeHomeDir(link.Source)
 	if err != nil {
@@ -55,6 +66,17 @@ func outsideSymlink(link Link) error {
 	if err != nil {
 		fmt.Println("Error getting absolute path of target:")
 		return err
+	}
+	sourceType, err := pathType(source)
+	if err != nil {
+		fmt.Println("Error checking source type:")
+		return err
+	}
+	if sourceType == "file" {
+		filename := filepath.Base(source)
+		if !strings.HasSuffix(dest, filename) {
+			dest = filepath.Join(dest, filename)
+		}
 	}
 	symlink, err := isSymlink(dest)
 	if err != nil {
