@@ -1,9 +1,7 @@
 package main
 
-import (
-	"fmt"
-)
+import "fyora/cmd"
 
 func main() {
-	fmt.Println("Hello World")
+	cmd.Execute()
 }
