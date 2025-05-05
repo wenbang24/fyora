@@ -48,6 +48,9 @@ func removeHomeDir(path string) (string, error) {
 func pathType(path string) (string, error) {
 	info, err := os.Stat(path)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return "dne", nil
+		}
 		return "", err
 	}
 	if info.IsDir() {
@@ -74,6 +77,10 @@ func outsideSymlink(link Link) error {
 	}
 	if sourceType == "file" {
 		filename := filepath.Base(source)
+		if err != nil {
+			fmt.Println("Error checking target type:")
+			return err
+		}
 		if !strings.HasSuffix(dest, filename) {
 			dest = filepath.Join(dest, filename)
 		}

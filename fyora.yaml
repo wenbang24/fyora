@@ -7,7 +7,7 @@ links:
       target: ~/Desktop/everything/
     - type: file
       source: ~/Desktop/everything/Photos/joshie.png
-      target: ~/Desktop/everything/
+      target: ~/Desktop/everything/newdir/
 ignore:
     - .DS_Store
     - .git
