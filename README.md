@@ -33,5 +33,13 @@ File links symlink the file itself i.e. /dir5/file.txt would be symlinked to ~/d
 
 Everything under ignore (files and folders) will NOT be symlinked.
 
+## Installation
+1. Clone the repo
+2. Run `go mod tidy` to install dependencies
+3. Run `go build` to build the binary
+4. Run `go install` to install the binary to your $GOPATH/bin directory
+5. Make a `fyora.yaml` file in your home directory (or wherever you want) and add your links to it
+6. Run `fyora` to create the symlinks (in the same directory as `fyora.yaml`, this is being worked on)
+
 ## Where does the name come from?
 My friend plays neopets and really wanted me to name it after Fyora, the faerie queen. I thought it was a cute name and it stuck.
