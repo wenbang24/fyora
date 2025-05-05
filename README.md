@@ -4,7 +4,7 @@
 Fyora is a declarative replacement for GNU Stow. It is a symlink farm manager that uses a yaml file to declare which files/directories should be symlinked where, rather than a cli interface.
 
 ## Usage
-Literally just `fyora`
+Literally just `fyora`.
 
 ## Config
 (the actually important part)
