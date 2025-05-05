@@ -8,6 +8,7 @@ Literally just `fyora`.
 
 ## Config
 (the actually important part)
+
 The fyora config file is a yaml file that looks like this:
 ```yaml
 links:
@@ -29,6 +30,8 @@ Outside links create a symlink to the folder itself i.e. ~/dir2/dir1 be symlinke
 Inside links symlink everything inside the first folder inside of the second folder i.e. ~/dir3/file.txt would be symlinked to ~/dir/dir4/file.txt.
 
 File links symlink the file itself i.e. /dir5/file.txt would be symlinked to ~/dir2/dir/file.txt.
+
+Everything under ignore (files and folders) will NOT be symlinked.
 
 ## Where does the name come from?
 My friend plays neopets and really wanted me to name it after Fyora, the faerie queen. I thought it was a cute name and it stuck.
