@@ -19,14 +19,6 @@ jobs:
               with:
                   go-version: "1.23"
             - name: Build
-              run: |
-                  CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
-                  go build -trimpath -ldflags="-s -w -X main.version=${GITHUB_REF#refs/tags/}" \
-                    -o builds/fyora_${{ matrix.goos }}_${{ matrix.goarch }}/fyora
-
-            - name: Publish Release
-              uses: softprops/action-gh-release@v1
-              with:
-                  files: builds/**/*
+              run: goreleaser release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
