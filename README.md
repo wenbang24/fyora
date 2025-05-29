@@ -41,6 +41,9 @@ Unsafe mode is dangerous and should only be used if you know what you're doing. 
 Everything under ignore (files and folders) will NOT be symlinked.
 
 ## Installation
+### Pre-built binaries
+You can download pre-built binaries for your platform from the [releases page](https://github.com/wenbang24/fyora/releases).
+### Building from source
 1. Clone the repo
 2. Run `go mod tidy` to install dependencies
 3. Run `go build` to build the binary
