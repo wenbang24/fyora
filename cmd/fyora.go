@@ -12,6 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Version = "v1.0.0"
+
 type Link struct {
 	Type   string `yaml:"type"`
 	Source string `yaml:"source"`
@@ -190,6 +192,7 @@ var rootCmd = &cobra.Command{
 	Long: `Fyora is a declarative replacement to GNU Stow.
 It allows you to manage your dotfiles and other configuration files in a more organized and efficient way.
 Made with love by @wenbang24`,
+	Version: Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		config := Config{}
 		configFile, err := os.ReadFile(ConfigFile)
