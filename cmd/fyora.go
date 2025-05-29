@@ -2,18 +2,21 @@ package cmd
 
 import (
 	"fmt"
-	yaml "github.com/goccy/go-yaml"
-	Errors "github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+
+	yaml "github.com/goccy/go-yaml"
+	Errors "github.com/pkg/errors"
+	"github.com/spf13/cobra"
 )
 
 type Link struct {
 	Type   string `yaml:"type"`
 	Source string `yaml:"source"`
 	Dest   string `yaml:"target"`
+	Unsafe bool   `yaml:"unsafe"`
 }
 
 type Config struct {
@@ -21,6 +24,8 @@ type Config struct {
 	Ignore    []string `yaml:"ignore"`
 	IgnoreSet map[string]struct{}
 }
+
+var ConfigFile string
 
 func isSymlink(path string) (bool, error) {
 	file, err := os.Lstat(path)
@@ -77,10 +82,6 @@ func outsideSymlink(link Link) error {
 	}
 	if sourceType == "file" {
 		filename := filepath.Base(source)
-		if err != nil {
-			fmt.Println("Error checking target type:")
-			return err
-		}
 		if !strings.HasSuffix(dest, filename) {
 			dest = filepath.Join(dest, filename)
 		}
@@ -102,6 +103,26 @@ func outsideSymlink(link Link) error {
 		} else {
 			fmt.Printf("Symlink %s already exists and points to %s", dest, target)
 			return Errors.New("symlink already exists and points to a different target")
+		}
+	}
+	if link.Unsafe {
+		info, err := os.Stat(dest)
+		if err != nil && !os.IsNotExist(err) {
+			fmt.Printf("Failed to check target: %s\n", err)
+			return Errors.New("failed to check target")
+		}
+		if info.IsDir() {
+			if err := os.RemoveAll(dest); err != nil {
+				fmt.Printf("Failed to delete directory %q: %v\n", dest, err)
+			} else {
+				fmt.Println("Deleted directory:", dest)
+			}
+		} else {
+			if err := os.Remove(dest); err != nil {
+				fmt.Printf("Failed to delete file %q: %v\n", dest, err)
+			} else {
+				fmt.Println("Deleted file:", dest)
+			}
 		}
 	}
 	if err := os.Symlink(source, dest); err != nil {
@@ -153,6 +174,7 @@ func insideSymlink(link Link, ignoreSet map[string]struct{}) error {
 			Type:   "outside",
 			Source: filepath.Join(sourceDir, file.Name()),
 			Dest:   filepath.Join(destDir, file.Name()),
+			Unsafe: link.Unsafe,
 		}
 		if err := outsideSymlink(link); err != nil {
 			fmt.Printf("Error creating symlink for %s to %s: %s\n", filepath.Join(sourceDir, file.Name()), filepath.Join(destDir, file.Name()), err)
@@ -165,12 +187,12 @@ func insideSymlink(link Link, ignoreSet map[string]struct{}) error {
 var rootCmd = &cobra.Command{
 	Use:   "fyora",
 	Short: "Fyora: a declarative replacement to GNU Stow",
-	Long: `Fyora is a declarative replacement to GNU Stow. 
+	Long: `Fyora is a declarative replacement to GNU Stow.
 It allows you to manage your dotfiles and other configuration files in a more organized and efficient way.
 Made with love by @wenbang24`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		config := Config{}
-		configFile, err := os.ReadFile("fyora.yaml")
+		configFile, err := os.ReadFile(ConfigFile)
 		if err != nil {
 			fmt.Println("Error opening config file:")
 			return err
@@ -184,29 +206,36 @@ Made with love by @wenbang24`,
 			ignoreSet[ignore] = struct{}{}
 		}
 		count := 0
+		var wg sync.WaitGroup
 		for _, link := range config.Links {
-			if link.Type == "outside" || link.Type == "file" {
-				if err := outsideSymlink(link); err != nil {
-					fmt.Printf("Error creating symlink: %s\n", err)
+			wg.Add(1)
+			go func(link Link) {
+				defer wg.Done()
+				if link.Type == "outside" || link.Type == "file" {
+					if err := outsideSymlink(link); err != nil {
+						fmt.Printf("Error creating symlink: %s\n", err)
+						count--
+					}
+				} else if link.Type == "inside" {
+					if err := insideSymlink(link, ignoreSet); err != nil {
+						fmt.Printf("Error creating symlink: %s\n", err)
+						count--
+					}
+				} else {
+					fmt.Printf("Unknown type: %s\n", link.Type)
 					count--
 				}
-			} else if link.Type == "inside" {
-				if err := insideSymlink(link, ignoreSet); err != nil {
-					fmt.Printf("Error creating symlink: %s\n", err)
-					count--
-				}
-			} else {
-				fmt.Printf("Unknown type: %s\n", link.Type)
-				count--
-			}
-			count++
+				count++
+			}(link)
 		}
+		wg.Wait()
 		fmt.Printf("Created %d symlinks\n", count)
 		return nil
 	},
 }
 
 func Execute() {
+	rootCmd.Flags().StringVarP(&ConfigFile, "config", "c", "~/.config/fyora.yaml", "Path to the configuration file")
 	if err := rootCmd.Execute(); err != nil {
 		if _, err := fmt.Fprintln(os.Stderr, err); err != nil {
 			os.Exit(134) // something terribly catastrophic happened (how does printing to stderr fail tho???)

@@ -4,7 +4,9 @@
 Fyora is a declarative replacement for GNU Stow. It is a symlink farm manager that uses a yaml file to declare which files/directories should be symlinked where, rather than a cli interface.
 
 ## Usage
-Literally just `fyora`.
+1. Create a config file (see below)
+2. Run `fyora`
+    1. By default, it will look for a file called `fyora.yaml` in your `.config` directory. You can specify a different path using the `--config` flag (`-c` shorthand).
 
 ## Config
 (the actually important part)
@@ -42,4 +44,6 @@ Everything under ignore (files and folders) will NOT be symlinked.
 6. Run `fyora` to create the symlinks (in the same directory as `fyora.yaml`, this is being worked on)
 
 ## Where does the name come from?
-My friend plays neopets and really wanted me to name it after Fyora, the faerie queen. I thought it was a cute name and it stuck.
+> "The Faerie Queen, Fyora, is the ruler of Faerieland. She is a kind faerie who basically tries to keep everything under control, not just in Faerieland." (Neopets Wiki)
+
+My friend is a neopets fan and really wanted me to name it after Fyora. I thought it was a cute name and it stuck.
