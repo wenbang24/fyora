@@ -20,7 +20,7 @@ jobs:
               run: |
                   CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
                   go build -trimpath -ldflags="-s -w -X main.version=${GITHUB_REF#refs/tags/}" \
-                    -o builds/yourcli_${{ matrix.goos }}_${{ matrix.goarch }}/yourcli
+                    -o builds/fyora_${{ matrix.goos }}_${{ matrix.goarch }}/fyora
 
             - name: Publish Release
               uses: softprops/action-gh-release@v1
