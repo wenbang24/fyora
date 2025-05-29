@@ -1,4 +1,4 @@
-module fyora
+module github.com/wenbang24/fyora
 
 go 1.23
 

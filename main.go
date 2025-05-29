@@ -1,6 +1,6 @@
 package main
 
-import "fyora/cmd"
+import "github.com/wenbang24/fyora/cmd"
 
 func main() {
 	cmd.Execute()
