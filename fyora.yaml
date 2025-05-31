@@ -1,11 +1,16 @@
 links:
-    - type: inside
-      source: ~/Desktop/everything/Config/dotfiles/
-      target: ~/
+    - type: outside
+      source: /dir1
+      target: ~/dir2
       unsafe: true
+    - type: inside
+      source: ~/dir3
+      target: ~/dir/dir4
+      unsafe: false
+    - type: file
+      source: /dir5/file.txt
+      target: ~/dir2/dir/file.txt
+      unsafe: false
 ignore:
     - .DS_Store
     - .git
-    - .gitignore
-    - README.md
-
