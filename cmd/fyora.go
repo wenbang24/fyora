@@ -100,7 +100,6 @@ func outsideSymlink(link Link) error {
 			return err
 		}
 		if target == source {
-			fmt.Printf("Symlink %s already exists and points to %s\n", dest, source)
 			return nil
 		} else {
 			fmt.Printf("Symlink %s already exists and points to %s", dest, target)
@@ -189,8 +188,7 @@ func insideSymlink(link Link, ignoreSet map[string]struct{}) error {
 var rootCmd = &cobra.Command{
 	Use:   "fyora",
 	Short: "Fyora: a declarative replacement to GNU Stow",
-	Long: `Fyora is a declarative replacement to GNU Stow.
-It allows you to manage your dotfiles and other configuration files in a more organized and efficient way.
+	Long: `Fyora is a declarative replacement to GNU Stow. It allows you to manage your dotfiles and other configuration files in a more organized and efficient way.
 Made with love by @wenbang24`,
 	Version: Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -239,6 +237,14 @@ Made with love by @wenbang24`,
 
 func Execute() {
 	rootCmd.Flags().StringVarP(&ConfigFile, "config", "c", "~/.config/fyora.yaml", "Path to the configuration file")
+	var err error
+	ConfigFile, err = removeHomeDir(ConfigFile)
+	if err != nil {
+		if _, err := fmt.Fprintln(os.Stderr, err); err != nil {
+			os.Exit(134) // something terribly catastrophic happened (how does printing to stderr fail tho???)
+		}
+		os.Exit(1)
+	}
 	if err := rootCmd.Execute(); err != nil {
 		if _, err := fmt.Fprintln(os.Stderr, err); err != nil {
 			os.Exit(134) // something terribly catastrophic happened (how does printing to stderr fail tho???)
