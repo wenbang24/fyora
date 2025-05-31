@@ -32,11 +32,11 @@ ignore:
 ```
 Outside links create a symlink to the folder itself i.e. ~/dir2/dir1 be symlinked to /dir1.
 
-Inside links symlink everything inside the first folder inside of the second folder i.e. ~/dir3/file.txt would be symlinked to ~/dir/dir4/file.txt.
+Inside links symlink everything inside the first folder to inside of the second folder i.e. ~/dir3/file.txt would be symlinked to ~/dir/dir4/file.txt.
 
 File links symlink the file itself i.e. /dir5/file.txt would be symlinked to ~/dir2/dir/file.txt.
 
-Unsafe mode is dangerous and should only be used if you know what you're doing. If there is something at the target location, it will be deleted before the symlink is created. This is useful for directories that may already exist but you want to replace with a symlink. **This can also lead to irreversible data loss if you are not careful.**
+Unsafe mode is dangerous and should only be used if you know what you're doing. If unsafe mode is enabled and there is something at the target location, it will be deleted before the symlink is created, **permanently deleting what was once there**. This is useful for directories that may already exist but you want to replace with a symlink. **This can also lead to irreversible data loss if you are not careful.**
 
 Everything under ignore (files and folders) will NOT be symlinked.
 
