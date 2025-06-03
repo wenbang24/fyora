@@ -41,6 +41,11 @@ Unsafe mode is dangerous and should only be used if you know what you're doing. 
 Everything under ignore (files and folders) will NOT be symlinked.
 
 ## Installation
+### Using Go
+If you have Go installed, you can install fyora with the following command:
+```bash
+go install github.com/wenbang24/fyora@latest
+```
 ### Pre-built binaries
 You can download pre-built binaries for your platform from the [releases page](https://github.com/wenbang24/fyora/releases).
 ### Building from source
