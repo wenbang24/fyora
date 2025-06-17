@@ -30,7 +30,7 @@ ignore:
     - .DS_Store
     - .git
 ```
-Outside links create a symlink to the folder itself i.e. ~/dir2/dir1 be symlinked to /dir1.
+Outside links create a symlink to the folder itself i.e. ~/dir2/dir1 will point to to /dir1.
 
 Inside links symlink everything inside the first folder to inside of the second folder i.e. ~/dir3/file.txt would be symlinked to ~/dir/dir4/file.txt.
 

@@ -9,7 +9,7 @@ import (
 	Errors "github.com/pkg/errors"
 )
 
-func outsideSymlink(link Link) error {
+func OutsideSymlink(link Link) error {
 	source, err := removeHomeDir(link.Source)
 	if err != nil {
 		fmt.Println("Error getting absolute path of source:")
@@ -76,7 +76,7 @@ func outsideSymlink(link Link) error {
 	return nil
 }
 
-func insideSymlink(link Link, ignoreSet map[string]struct{}) error {
+func InsideSymlink(link Link) error {
 	sourceDir, err := removeHomeDir(link.Source)
 	if err != nil {
 		fmt.Println("Error getting absolute path of source:")
@@ -111,7 +111,7 @@ func insideSymlink(link Link, ignoreSet map[string]struct{}) error {
 		return err
 	}
 	for _, file := range files {
-		if _, skip := ignoreSet[file.Name()]; skip {
+		if _, skip := config.IgnoreSet[file.Name()]; skip {
 			continue
 		}
 		link := Link{
@@ -120,7 +120,7 @@ func insideSymlink(link Link, ignoreSet map[string]struct{}) error {
 			Dest:   filepath.Join(destDir, file.Name()),
 			Unsafe: link.Unsafe,
 		}
-		if err := outsideSymlink(link); err != nil {
+		if err := OutsideSymlink(link); err != nil {
 			fmt.Printf("Error creating symlink for %s to %s: %s\n", filepath.Join(sourceDir, file.Name()), filepath.Join(destDir, file.Name()), err)
 			continue
 		}

@@ -1,0 +1,15 @@
+links:
+    - type: outside
+      source: /tmp/fyora_test/dir1
+      target: /tmp/fyora_test/dir2
+      unsafe: true
+    - type: inside
+      source: ~/dir3
+      target: ~/dir/dir4
+    - type: file
+      source: /dir5/file.txt
+      target: ~/dir2/dir/file.txt
+ignore:
+    - .DS_Store
+    - .git
+    - abcdef

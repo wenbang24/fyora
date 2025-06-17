@@ -25,15 +25,16 @@ type Config struct {
 }
 
 var ConfigFile string
+var config Config
 
 var rootCmd = &cobra.Command{
 	Use:   "fyora",
 	Short: "Fyora: a declarative replacement to GNU Stow",
 	Long: `Fyora is a declarative replacement to GNU Stow. It allows you to manage your dotfiles and other configuration files in a more organized and efficient way.
-Made with love by @wenbang24`,
+Made with love by @wenbang24
+Docs: https://github.com/wenbang24/fyora/blob/main/README.md`,
 	Version: Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		config := Config{}
 		configFile, err := os.ReadFile(ConfigFile)
 		if err != nil {
 			fmt.Println("Error opening config file:")
@@ -43,9 +44,8 @@ Made with love by @wenbang24`,
 			fmt.Println("Error reading config file:")
 			return err
 		}
-		var ignoreSet = make(map[string]struct{})
 		for _, ignore := range config.Ignore {
-			ignoreSet[ignore] = struct{}{}
+			config.IgnoreSet[ignore] = struct{}{}
 		}
 		count := 0
 		var wg sync.WaitGroup
@@ -54,12 +54,12 @@ Made with love by @wenbang24`,
 			go func(link Link) {
 				defer wg.Done()
 				if link.Type == "outside" || link.Type == "file" {
-					if err := outsideSymlink(link); err != nil {
+					if err := OutsideSymlink(link); err != nil {
 						fmt.Printf("Error creating symlink: %s\n", err)
 						count--
 					}
 				} else if link.Type == "inside" {
-					if err := insideSymlink(link, ignoreSet); err != nil {
+					if err := InsideSymlink(link); err != nil {
 						fmt.Printf("Error creating symlink: %s\n", err)
 						count--
 					}
