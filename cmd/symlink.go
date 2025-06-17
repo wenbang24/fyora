@@ -107,7 +107,7 @@ func InsideSymlink(link Link) error {
 		link := Link{
 			Type:   "outside",
 			Source: filepath.Join(sourceDir, file.Name()),
-			Dest:   filepath.Join(destDir, file.Name()),
+			Dest:   destDir,
 			Unsafe: link.Unsafe,
 		}
 		if err := OutsideSymlink(link); err != nil {
