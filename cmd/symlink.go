@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	Errors "github.com/pkg/errors"
 )
@@ -20,17 +19,8 @@ func OutsideSymlink(link Link) error {
 		fmt.Println("Error getting absolute path of target:")
 		return err
 	}
-	sourceType, err := pathType(source)
-	if err != nil {
-		fmt.Println("Error checking source type:")
-		return err
-	}
-	if sourceType == "file" {
-		filename := filepath.Base(source)
-		if !strings.HasSuffix(dest, filename) {
-			dest = filepath.Join(dest, filename)
-		}
-	}
+	filename := filepath.Base(source)
+	dest = filepath.Join(dest, filename)
 	symlink, err := isSymlink(dest)
 	if err != nil {
 		fmt.Println("Error checking if target is a symlink:")

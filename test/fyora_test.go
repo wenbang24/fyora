@@ -11,8 +11,30 @@ import (
 
 var dname = filepath.Join(os.TempDir(), "fyora_test")
 
+func createDirs(dirs []string) error {
+	for _, dir := range dirs {
+		path := filepath.Join(dname, dir)
+		if err := os.MkdirAll(path, 0777); err != nil && !os.IsExist(err) {
+			return fmt.Errorf("Failed to create directory %s: %w", path, err)
+		}
+	}
+	return nil
+}
+
+func createFiles(files []string) error {
+	for _, file := range files {
+		path := filepath.Join(dname, file)
+		if err := os.WriteFile(path, []byte(file+" qwertyuiop"), 0644); err != nil && !os.IsExist(err) {
+			return fmt.Errorf("Failed to create file %s: %w", path, err)
+		}
+	}
+	return nil
+}
+
 func TestMain(m *testing.M) {
-	err := os.Mkdir(dname, 0777)
+	err := os.RemoveAll(dname)
+
+	err = os.Mkdir(dname, 0777)
 	if err != nil && !os.IsExist(err) {
 		fmt.Println("Error creating temporary directory:", err)
 		os.Exit(1)
@@ -34,17 +56,15 @@ func TestMain(m *testing.M) {
 }
 
 func TestOutside(t *testing.T) {
-	err := os.Mkdir(filepath.Join(dname, "outside"), 0777)
-	if err != nil && !os.IsExist(err) {
-		t.Fatalf("Failed to create source directory: %v", err)
-	}
-	err = os.WriteFile(filepath.Join(dname, "outside/test.txt"), []byte("abcdef"), 0644)
+	err := createDirs([]string{"outside", "outside/nested", "outside_target"})
 	if err != nil {
-		t.Fatalf("Failed to create source file: %v", err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	err = os.Mkdir(filepath.Join(dname, "outside_target"), 0777)
-	if err != nil && !os.IsExist(err) {
-		t.Fatalf("Failed to create target directory: %v", err)
+	err = createFiles([]string{"outside/test1.txt", "outside/nested/test2.txt"})
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	link := fyora.Link{
 		Type:   "outside",
@@ -54,7 +74,20 @@ func TestOutside(t *testing.T) {
 	if err := fyora.OutsideSymlink(link); err != nil {
 		t.Fatalf("Failed to create outside symlink: %v", err)
 	}
-	if _, err := os.Lstat(filepath.Join(dname, "outside_target/outside/text.txt")); err != nil {
-		t.Fatalf("Failed to verify symlink: %v", err)
+	test1, err := os.ReadFile(filepath.Join(dname, "outside_target/outside/test1.txt"))
+	if err != nil {
+		fmt.Printf("Failed to read test file: %v\n", err)
+		os.Exit(1)
+	}
+	if string(test1) != "outside/test1.txt qwertyuiop" {
+		t.Fatalf("Test file content mismatch: expected %q, got %q\n", "test1.txt qwertyuiop", string(test1))
+	}
+	test2, err := os.ReadFile(filepath.Join(dname, "outside_target/outside/nested/test2.txt"))
+	if err != nil {
+		fmt.Printf("Failed to read nested test file: %v\n", err)
+		os.Exit(1)
+	}
+	if string(test2) != "outside/nested/test2.txt qwertyuiop" {
+		t.Fatalf("Nested test file content mismatch: expected %q, got %q\n", "test2.txt qwertyuiop", string(test2))
 	}
 }
