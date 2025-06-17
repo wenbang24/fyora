@@ -53,8 +53,6 @@ You can download pre-built binaries for your platform from the [releases page](h
 2. Run `go mod tidy` to install dependencies
 3. Run `go build` to build the binary
 4. Run `go install` to install the binary to your $GOPATH/bin directory
-5. Make a `fyora.yaml` file in your home directory (or wherever you want) and add your links to it
-6. Run `fyora` to create the symlinks (in the same directory as `fyora.yaml`, this is being worked on)
 
 ## Where does the name come from?
 > "The Faerie Queen, Fyora, is the ruler of Faerieland. She is a kind faerie who basically tries to keep everything under control, not just in Faerieland." (Neopets Wiki)
