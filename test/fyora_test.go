@@ -52,6 +52,10 @@ func TestMain(m *testing.M) {
 
 	fyora.ConfigFile = filepath.Join(os.TempDir(), "fyora.yaml")
 	exit := m.Run()
+	if err := os.RemoveAll(dname); err != nil {
+		fmt.Println("Error removing temporary directory:", err)
+		os.Exit(1)
+	}
 	os.Exit(exit)
 }
 
