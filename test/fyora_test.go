@@ -21,9 +21,9 @@ func createDirs(dirs []string) error {
 	return nil
 }
 
-func createFiles(files []string) error {
+func createFiles(files []string, prefix string) error {
 	for _, file := range files {
-		path := filepath.Join(dname, file)
+		path := filepath.Join(dname, prefix, file)
 		if err := os.WriteFile(path, []byte(file+" qwertyuiop"), 0644); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("Failed to create file %s: %w", path, err)
 		}
@@ -49,8 +49,6 @@ func TestMain(m *testing.M) {
 		fmt.Println("Error writing test configuration file:", err)
 		os.Exit(1)
 	}
-
-	fyora.ConfigFile = filepath.Join(os.TempDir(), "fyora.yaml")
 	exit := m.Run()
 	if err := os.RemoveAll(dname); err != nil {
 		fmt.Println("Error removing temporary directory:", err)
@@ -65,7 +63,7 @@ func TestOutside(t *testing.T) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	err = createFiles([]string{"outside/test1.txt", "outside/nested/test2.txt"})
+	err = createFiles([]string{"test1.txt", "nested/test2.txt"}, "outside")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -82,14 +80,14 @@ func TestOutside(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to read test file: %v\n", err)
 	}
-	if string(test1) != "outside/test1.txt qwertyuiop" {
+	if string(test1) != "test1.txt qwertyuiop" {
 		t.Fatalf("Test file content mismatch: expected %q, got %q\n", "test1.txt qwertyuiop", string(test1))
 	}
 	test2, err := os.ReadFile(filepath.Join(dname, "outside_target/outside/nested/test2.txt"))
 	if err != nil {
 		t.Fatalf("Failed to read nested test file: %v\n", err)
 	}
-	if string(test2) != "outside/nested/test2.txt qwertyuiop" {
+	if string(test2) != "nested/test2.txt qwertyuiop" {
 		t.Fatalf("Nested test file content mismatch: expected %q, got %q\n", "test2.txt qwertyuiop", string(test2))
 	}
 }
@@ -100,7 +98,7 @@ func TestInside(t *testing.T) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	err = createFiles([]string{"inside/test1.txt", "inside/nested/test2.txt", "inside/nested/nested/test3.txt"})
+	err = createFiles([]string{"test1.txt", "nested/test2.txt", "nested/nested/test3.txt"}, "inside")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -117,21 +115,52 @@ func TestInside(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to read test file: %v\n", err)
 	}
-	if string(test1) != "inside/test1.txt qwertyuiop" {
+	if string(test1) != "test1.txt qwertyuiop" {
 		t.Fatalf("Test file content mismatch: expected %q, got %q\n", "test1.txt qwertyuiop", string(test1))
 	}
 	test2, err := os.ReadFile(filepath.Join(dname, "inside_target/nested/test2.txt"))
 	if err != nil {
 		t.Fatalf("Failed to read nested test file: %v\n", err)
 	}
-	if string(test2) != "inside/nested/test2.txt qwertyuiop" {
+	if string(test2) != "nested/test2.txt qwertyuiop" {
 		t.Fatalf("Nested test file content mismatch: expected %q, got %q\n", "test2.txt qwertyuiop", string(test2))
 	}
 	test3, err := os.ReadFile(filepath.Join(dname, "inside_target/nested/nested/test3.txt"))
 	if err != nil {
 		t.Fatalf("Failed to read deeply nested test file: %v\n", err)
 	}
-	if string(test3) != "inside/nested/nested/test3.txt qwertyuiop" {
+	if string(test3) != "nested/nested/test3.txt qwertyuiop" {
 		t.Fatalf("Deeply nested test file content mismatch: expected %q, got %q\n", "test3.txt qwertyuiop", string(test3))
 	}
+}
+
+/*
+main/
+- 1.txt
+- 2.txt
+- .dotfile
+- setup.sh
+- .git
+--- gitfiles1.txt
+--- gitfiles2.txt
+- dir1
+--- 1.txt
+--- dir2
+----- dir3
+------- 1.txt
+------- dir3.txt
+------- dir4
+--------- dir4.txt
+--------- 1.txt
+*/
+func TestGlobIgnore(t *testing.T) {
+	err := createDirs([]string{"main", "main/dir1", "main/dir1/dir2", "main/dir1/dir2/dir3", "main/dir1/dir2/dir3/dir4", ".git"})
+	if err != nil {
+		t.Fatalf("Failed to create directories: %v", err)
+	}
+	err = createFiles([]string{"1.txt", "2.txt", "dir1/test2.txt", "dir1/dir2/test3.txt", "dir1/dir2/dir3/test4.txt"}, "main")
+	if err != nil {
+		t.Fatalf("Failed to create files: %v", err)
+	}
+	
 }

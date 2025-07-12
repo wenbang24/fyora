@@ -1,6 +1,6 @@
 links:
     - type: outside
-      source: /tmp/fyora_test/dir1
+      source: 
       target: /tmp/fyora_test/dir2
       unsafe: true
     - type: inside
@@ -12,4 +12,4 @@ links:
 ignore:
     - .DS_Store
     - .git
-    - abcdef
+    - *.abcdef
