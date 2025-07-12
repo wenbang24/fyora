@@ -101,8 +101,14 @@ func InsideSymlink(link Link) error {
 		return err
 	}
 	for _, file := range files {
-		if _, skip := config.IgnoreSet[file.Name()]; skip {
-			continue
+		skip := false
+		for _, ignore := range config.IgnoreGlob {
+			if ignore.Match(file.Name()) {
+				skip = true
+			}
+		}
+		if skip {
+			continue;
 		}
 		link := Link{
 			Type:   "outside",

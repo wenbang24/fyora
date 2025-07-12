@@ -9,7 +9,7 @@ Fyora is a declarative replacement for GNU Stow. It is a symlink farm manager th
     1. By default, it will look for a file called `fyora.yaml` in your `~/.config` directory. You can specify a different path using the `--config` flag (`-c` shorthand).
 
 ## Config
-(the actually important part)
+(the important part)
 
 The fyora config file is a yaml file that looks like this:
 ```yaml

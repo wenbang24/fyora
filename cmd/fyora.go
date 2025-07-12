@@ -5,11 +5,12 @@ import (
 	"os"
 	"sync"
 
+	"github.com/gobwas/glob"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 )
 
-var Version = "v1.1.1"
+var Version = "v1.2.0"
 
 type Link struct {
 	Type   string `yaml:"type"`
@@ -19,9 +20,9 @@ type Link struct {
 }
 
 type Config struct {
-	Links     []Link   `yaml:"links"`
-	Ignore    []string `yaml:"ignore"`
-	IgnoreSet map[string]struct{}
+	Links      []Link   `yaml:"links"`
+	Ignore     []string `yaml:"ignore"`
+	IgnoreGlob []glob.Glob
 }
 
 var ConfigFile string
@@ -45,7 +46,12 @@ Docs: https://github.com/wenbang24/fyora/blob/main/README.md`,
 			return err
 		}
 		for _, ignore := range config.Ignore {
-			config.IgnoreSet[ignore] = struct{}{}
+			g, err := glob.Compile(ignore)
+			if err != nil {
+				fmt.Printf("Error compiling glob pattern '%s': %s\n", ignore, err)
+				return err
+			}
+			config.IgnoreGlob = append(config.IgnoreGlob, g)
 		}
 		count := 0
 		var wg sync.WaitGroup
