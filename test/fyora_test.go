@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	fyora "github.com/wenbang24/fyora/cmd"
+	"gopkg.in/yaml.v3"
 )
 
 var dname = filepath.Join(os.TempDir(), "fyora_test")
@@ -141,8 +142,8 @@ main/
 - .dotfile
 - setup.sh
 - .git
---- gitfiles1.txt
---- gitfiles2.txt
+--- gitfile.txt
+--- hook.sh
 - dir1
 --- 1.txt
 --- dir2
@@ -153,14 +154,50 @@ main/
 --------- dir4.txt
 --------- 1.txt
 */
+
+type fyoraYaml struct {
+	Links  []map[string]string
+	Ignore []string
+}
+
 func TestGlobIgnore(t *testing.T) {
 	err := createDirs([]string{"main", "main/dir1", "main/dir1/dir2", "main/dir1/dir2/dir3", "main/dir1/dir2/dir3/dir4", ".git"})
 	if err != nil {
 		t.Fatalf("Failed to create directories: %v", err)
 	}
-	err = createFiles([]string{"1.txt", "2.txt", "dir1/test2.txt", "dir1/dir2/test3.txt", "dir1/dir2/dir3/test4.txt"}, "main")
+	err = createFiles([]string{"1.txt", "2.txt", ".dotfile", "setup.sh", ".git/gitfile.txt", ".git/hook.sh", "dir1/1.txt", "dir1/dir2/dir3/1.txt", "dir1/dir2/dir3/dir3.txt", "dir1/dir2/dir3/dir4/1.txt", "dir1/dir2/dir3/dir4/dir4.txt"}, "main")
 	if err != nil {
 		t.Fatalf("Failed to create files: %v", err)
 	}
-	
+	configFilename := filepath.Join(dname, "fyora.yaml")
+	configFile, err := os.OpenFile(configFilename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
+	if err != nil {
+		t.Fatalf("Failed to open config file %s: %v", configFilename, err)
+	}
+	defer configFile.Close()
+	err = yaml.NewEncoder(configFile).Encode(fyoraYaml{
+		Links: []map[string]string{
+			{
+				"type":   "inside",
+				"source": filepath.Join(dname, "main"),
+				"dest":   filepath.Join(dname, "main_target"),
+			},
+		},
+		Ignore: []string{
+			"*.sh",
+			"**/dir1/**/1.txt",
+			".*",
+		},
+	})
+	if err != nil {
+		t.Fatalf("Failed to write config file %s: %v", configFilename, err)
+	}
+	link := fyora.Link{
+		Type:   "inside",
+		Source: filepath.Join(dname, "main"),
+		Dest:   filepath.Join(dname, "main_target"),
+	}
+	if err := fyora.InsideSymlink(link); err != nil {
+		t.Fatalf("Failed to create inside symlink: %v", err)
+	}
 }
