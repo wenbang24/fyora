@@ -36,6 +36,11 @@ Made with love by @wenbang24
 Docs: https://github.com/wenbang24/fyora/blob/main/README.md`,
 	Version: Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ConfigFile, err := removeHomeDir(ConfigFile)
+		if err != nil {
+			return err
+		}
+		fmt.Println("Using config file:", ConfigFile)
 		configFile, err := os.ReadFile(ConfigFile)
 		if err != nil {
 			fmt.Println("Error opening config file:")
