@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version = "v1.2.0"
+var Version = "v1.2.1"
 
 type Link struct {
 	Type   string `yaml:"type"`
