@@ -48,6 +48,10 @@ go install github.com/wenbang24/fyora@latest
 ```
 ### Pre-built binaries
 You can download pre-built binaries for your platform from the [releases page](https://github.com/wenbang24/fyora/releases).
+
+Then simply move the binary to a directory in your PATH, such as `/usr/local/bin` or `~/bin`.
+ - Linux/macOS: `chmod +x fyora`, `mv fyora /usr/local/bin`
+ - Windows: Move `fyora.exe` to a directory in your PATH, such as `C:\Windows\System32`
 ### Building from source
 1. Clone the repo
 2. Run `go mod tidy` to install dependencies
