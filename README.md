@@ -3,6 +3,27 @@
 
 Fyora is a declarative replacement for GNU Stow. It is a symlink farm manager that uses a yaml file to declare which files/directories should be symlinked where, rather than a cli interface.
 
+## Installation
+### Using Go
+If you have Go installed, you can install fyora with the following command:
+```bash
+go install github.com/wenbang24/fyora@latest
+```
+### Pre-built binaries
+You can download pre-built binaries for your platform from the [releases page](https://github.com/wenbang24/fyora/releases).
+
+Then simply move the binary to a directory in your PATH, such as `/usr/local/bin` or `~/bin`.
+ - Linux/macOS: `chmod +x fyora`, `mv fyora /usr/local/bin`
+ - Windows: Move `fyora.exe` to a directory in your PATH, such as `C:\Windows\System32`
+
+Now open a terminal/command prompt and run `fyora --version` to see if it was installed correctly.
+
+### Building from source
+1. Clone the repo
+2. Run `go mod tidy` to install dependencies
+3. Run `go build` to build the binary
+4. Run `go install` to install the binary to your $GOPATH/bin directory
+
 ## Usage
 1. Create a config file (see below)
 2. Run `fyora`
@@ -39,24 +60,6 @@ File links symlink the file itself i.e. /dir5/file.txt would be symlinked to ~/d
 Unsafe mode is dangerous and should only be used if you know what you're doing. If unsafe mode is enabled and there is something at the target location, it will be deleted before the symlink is created, **permanently deleting what was once there**. This is useful for directories that may already exist but you want to replace with a symlink. **This can also lead to irreversible data loss if you are not careful.**
 
 Everything under ignore (files and folders) will NOT be symlinked.
-
-## Installation
-### Using Go
-If you have Go installed, you can install fyora with the following command:
-```bash
-go install github.com/wenbang24/fyora@latest
-```
-### Pre-built binaries
-You can download pre-built binaries for your platform from the [releases page](https://github.com/wenbang24/fyora/releases).
-
-Then simply move the binary to a directory in your PATH, such as `/usr/local/bin` or `~/bin`.
- - Linux/macOS: `chmod +x fyora`, `mv fyora /usr/local/bin`
- - Windows: Move `fyora.exe` to a directory in your PATH, such as `C:\Windows\System32`
-### Building from source
-1. Clone the repo
-2. Run `go mod tidy` to install dependencies
-3. Run `go build` to build the binary
-4. Run `go install` to install the binary to your $GOPATH/bin directory
 
 ## Where does the name come from?
 > "The Faerie Queen, Fyora, is the ruler of Faerieland. She is a kind faerie who basically tries to keep everything under control, not just in Faerieland." (Neopets Wiki)
