@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Version = "v1.2.1"
+var Version = "v1.3.0"
 
 type Link struct {
 	Type   string `yaml:"type"`
@@ -44,10 +44,7 @@ Docs: https://github.com/wenbang24/fyora/blob/main/README.md`,
 		configFile, err := os.ReadFile(ConfigFile)
 		if err != nil {
 			if os.IsNotExist(err) {
-				if ConfigFile == "~/.config/fyora.yaml" {
-					fmt.Println("Config file could not be found. You can create a default config file at by ~/.config/fyora.yaml running 'fyora init'")
-				}
-				fmt.Println("Specified config file could not be found. Please create a config file at", ConfigFile)
+				fmt.Println("Specified config file could not be found. You can create a default config file at by ~/.config/fyora.yaml running 'fyora init'")
 				return nil
 			}
 			fmt.Println("Error opening config file:")
@@ -95,6 +92,7 @@ Docs: https://github.com/wenbang24/fyora/blob/main/README.md`,
 }
 
 func Execute() {
+	rootCmd.AddCommand(initCmd)
 	rootCmd.Flags().StringVarP(&ConfigFile, "config", "c", "~/.config/fyora.yaml", "Path to the configuration file")
 	var err error
 	ConfigFile, err = removeHomeDir(ConfigFile)
