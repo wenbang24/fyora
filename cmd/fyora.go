@@ -43,6 +43,13 @@ Docs: https://github.com/wenbang24/fyora/blob/main/README.md`,
 		fmt.Println("Using config file:", ConfigFile)
 		configFile, err := os.ReadFile(ConfigFile)
 		if err != nil {
+			if os.IsNotExist(err) {
+				if ConfigFile == "~/.config/fyora.yaml" {
+					fmt.Println("Config file could not be found. You can create a default config file at by ~/.config/fyora.yaml running 'fyora init'")
+				}
+				fmt.Println("Specified config file could not be found. Please create a config file at", ConfigFile)
+				return nil
+			}
 			fmt.Println("Error opening config file:")
 			return err
 		}
